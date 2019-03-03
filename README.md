@@ -1,6 +1,7 @@
-# OWASP Benchmark
-The OWASP Benchmark Project is a Java test suite designed to verify the speed and accuracy of vulnerability detection tools. The initial version is intended to support Static Analysis Security Testing Tools (SAST). A future release will support Dynamic Analysis Security Testing Tools (DAST), like <a href="https://www.owasp.org/index.php/ZAP">OWASP ZAP</a>, and Interactive Analysis Security Testing Tools (IAST). The goal is that this test application is fully runnable and all the vulnerabilities are actually exploitable so its a fair test for any kind of application vulnerability detection tool.
-
-The project documentation is all on the OWASP site at the <a href="https://www.owasp.org/index.php/Benchmark">OWASP Benchmark</a> project pages. Please refer to that site for all the project details.
-
-The current latest release is v1.2. Note that all the releases that are available here: https://github.com/OWASP/Benchmark/releases, are historical. The latest release is always available live by simply cloning or pulling the head of this repository (i.e., git pull).
+# OWASP Benchmark Reorganized
+This is a version of the OWASP Benchmark Project (Java) where all the test cases have been reorganized to make it easy for a human to explore it. Instead of having all the tests cases in a single directory:
+- all the test cases are organized by categories: cmdi, crypto, hash, ldapi, pathtraver, securecookie, sqli, trustbound, weakrand, xpathi and xss
+- on each category, the test cases are organized between:
+-- "issueexpected" where an issue is expected
+-- "notissueexpected" where an issue is not expected
+- the "notissueexpected_discarded" directory is containing cases not covered by SonarQube Developer Edition because the engine is not yet ready or because we think the cases are not relevant in real life.
