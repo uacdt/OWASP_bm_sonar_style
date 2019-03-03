@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.xpathi.noissueexpected;
+package org.owasp.benchmark.testcode.xpathi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/xpathi-00/BenchmarkTest00520")
-public class BenchmarkTest00520 extends HttpServlet {
+@WebServlet(value="/xpathi-00/BenchmarkTest00683")
+public class BenchmarkTest00683 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -40,13 +40,9 @@ public class BenchmarkTest00520 extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 	
-		java.util.Map<String,String[]> map = request.getParameterMap();
-		String param = "";
-		if (!map.isEmpty()) {
-			String[] values = map.get("BenchmarkTest00520");
-			if (values != null) param = values[0];
-		}
-		
+		org.owasp.benchmark.helpers.SeparateClassRequest scr = new org.owasp.benchmark.helpers.SeparateClassRequest( request );
+		String param = scr.getTheParameter("BenchmarkTest00683");
+		if (param == null) param = "";
 		
 		
 		String bar;
@@ -68,16 +64,20 @@ public class BenchmarkTest00520 extends HttpServlet {
 			javax.xml.xpath.XPathFactory xpf = javax.xml.xpath.XPathFactory.newInstance();
 			javax.xml.xpath.XPath xp = xpf.newXPath();
 			
+			String expression = "/Employees/Employee[@emplid='"+bar+"']";
+			
 			response.getWriter().println(
 "Your query results are: <br/>"
 );
  
-			String expression = "/Employees/Employee[@emplid='"+bar+"']";
-			response.getWriter().println(
-xp.evaluate(expression, xmlDocument) + "<br/>"
+			org.w3c.dom.NodeList nodeList = (org.w3c.dom.NodeList) xp.compile(expression).evaluate(xmlDocument, javax.xml.xpath.XPathConstants.NODESET);
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				org.w3c.dom.Element value = (org.w3c.dom.Element) nodeList.item(i);
+				response.getWriter().println(
+value.getTextContent() + "<br/>"
 );
 
-			
+			}
 		} catch (javax.xml.xpath.XPathExpressionException e) {
 			// OK to swallow
 			System.out.println("XPath expression exception caught and swallowed: " + e.getMessage());

@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.xpathi.noissueexpected;
+package org.owasp.benchmark.testcode.xpathi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,47 +26,39 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/xpathi-00/BenchmarkTest00116")
-public class BenchmarkTest00116 extends HttpServlet {
+@WebServlet(value="/xpathi-00/BenchmarkTest01893")
+public class BenchmarkTest01893 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		javax.servlet.http.Cookie userCookie = new javax.servlet.http.Cookie("BenchmarkTest00116", "2222");
+		javax.servlet.http.Cookie userCookie = new javax.servlet.http.Cookie("BenchmarkTest01893", "2222");
 		userCookie.setMaxAge(60*3); //Store cookie for 3 minutes
 		userCookie.setSecure(true);
 		userCookie.setPath(request.getRequestURI());
 		response.addCookie(userCookie);
-		javax.servlet.RequestDispatcher rd = request.getRequestDispatcher("/xpathi-00/BenchmarkTest00116.html");
+		javax.servlet.RequestDispatcher rd = request.getRequestDispatcher("/xpathi-00/BenchmarkTest01893.html");
 		rd.include(request, response);
 	}
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		javax.servlet.http.Cookie[] theCookies = request.getCookies();
 		
 		String param = "noCookieValueSupplied";
 		if (theCookies != null) {
 			for (javax.servlet.http.Cookie theCookie : theCookies) {
-				if (theCookie.getName().equals("BenchmarkTest00116")) {
+				if (theCookie.getName().equals("BenchmarkTest01893")) {
 					param = java.net.URLDecoder.decode(theCookie.getValue(), "UTF-8");
 					break;
 				}
 			}
 		}
-		
-		
-		String bar = "safe!";
-		java.util.HashMap<String,Object> map51005 = new java.util.HashMap<String,Object>();
-		map51005.put("keyA-51005", "a_Value"); // put some stuff in the collection
-		map51005.put("keyB-51005", param); // put it in a collection
-		map51005.put("keyC", "another_Value"); // put some stuff in the collection
-		bar = (String)map51005.get("keyB-51005"); // get it back out
-		bar = (String)map51005.get("keyA-51005"); // get safe value back out
-		
+
+		String bar = doSomething(request, param);
 		
 		try {
 			java.io.FileInputStream file = new java.io.FileInputStream(org.owasp.benchmark.helpers.Utils.getFileFromClasspath("employees.xml", this.getClass().getClassLoader()));
@@ -100,6 +92,19 @@ value.getTextContent() + "<br/>"
 		} catch (org.xml.sax.SAXException e) {
 			System.out.println("XPath expression exception caught and swallowed: " + e.getMessage());
 		}
-	}
+	}  // end doPost
 	
+		
+	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
+
+		String bar;
+		
+		// Simple if statement that assigns constant to bar on true condition
+		int num = 86;
+		if ( (7*42) - num > 200 )
+		   bar = "This_should_always_happen"; 
+		else bar = param;
+	
+		return bar;	
+	}
 }

@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.xpathi.noissueexpected;
+package org.owasp.benchmark.testcode.xpathi.noissueexpected_discarded.maps;
 
 import java.io.IOException;
 
@@ -26,32 +26,46 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/xpathi-00/BenchmarkTest00683")
-public class BenchmarkTest00683 extends HttpServlet {
+@WebServlet(value="/xpathi-00/BenchmarkTest00116")
+public class BenchmarkTest00116 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
+		javax.servlet.http.Cookie userCookie = new javax.servlet.http.Cookie("BenchmarkTest00116", "2222");
+		userCookie.setMaxAge(60*3); //Store cookie for 3 minutes
+		userCookie.setSecure(true);
+		userCookie.setPath(request.getRequestURI());
+		response.addCookie(userCookie);
+		javax.servlet.RequestDispatcher rd = request.getRequestDispatcher("/xpathi-00/BenchmarkTest00116.html");
+		rd.include(request, response);
 	}
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 	
-		org.owasp.benchmark.helpers.SeparateClassRequest scr = new org.owasp.benchmark.helpers.SeparateClassRequest( request );
-		String param = scr.getTheParameter("BenchmarkTest00683");
-		if (param == null) param = "";
+		javax.servlet.http.Cookie[] theCookies = request.getCookies();
+		
+		String param = "noCookieValueSupplied";
+		if (theCookies != null) {
+			for (javax.servlet.http.Cookie theCookie : theCookies) {
+				if (theCookie.getName().equals("BenchmarkTest00116")) {
+					param = java.net.URLDecoder.decode(theCookie.getValue(), "UTF-8");
+					break;
+				}
+			}
+		}
 		
 		
-		String bar;
-		
-		// Simple ? condition that assigns constant to bar on true condition
-		int num = 106;
-		
-		bar = (7*18) + num > 200 ? "This_should_always_happen" : param;
-		
+		String bar = "safe!";
+		java.util.HashMap<String,Object> map51005 = new java.util.HashMap<String,Object>();
+		map51005.put("keyA-51005", "a_Value"); // put some stuff in the collection
+		map51005.put("keyB-51005", param); // put it in a collection
+		map51005.put("keyC", "another_Value"); // put some stuff in the collection
+		bar = (String)map51005.get("keyB-51005"); // get it back out
+		bar = (String)map51005.get("keyA-51005"); // get safe value back out
 		
 		
 		try {

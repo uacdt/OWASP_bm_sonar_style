@@ -12,11 +12,11 @@
 * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
-* @author Dave Wichers <a href="https://www.aspectsecurity.com">Aspect Security</a>
+* @author Nick Sanidas <a href="https://www.aspectsecurity.com">Aspect Security</a>
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.xpathi.noissueexpected;
+package org.owasp.benchmark.testcode.xpathi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,31 +26,47 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/xpathi-00/BenchmarkTest01225")
-public class BenchmarkTest01225 extends HttpServlet {
+@WebServlet(value="/xpathi-00/BenchmarkTest00117")
+public class BenchmarkTest00117 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
+		javax.servlet.http.Cookie userCookie = new javax.servlet.http.Cookie("BenchmarkTest00117", "2222");
+		userCookie.setMaxAge(60*3); //Store cookie for 3 minutes
+		userCookie.setSecure(true);
+		userCookie.setPath(request.getRequestURI());
+		response.addCookie(userCookie);
+		javax.servlet.RequestDispatcher rd = request.getRequestDispatcher("/xpathi-00/BenchmarkTest00117.html");
+		rd.include(request, response);
 	}
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 	
-		String param = "";
-		java.util.Enumeration<String> headers = request.getHeaders("BenchmarkTest01225");
+		javax.servlet.http.Cookie[] theCookies = request.getCookies();
 		
-		if (headers != null && headers.hasMoreElements()) {
-			param = headers.nextElement(); // just grab first element
+		String param = "noCookieValueSupplied";
+		if (theCookies != null) {
+			for (javax.servlet.http.Cookie theCookie : theCookies) {
+				if (theCookie.getName().equals("BenchmarkTest00117")) {
+					param = java.net.URLDecoder.decode(theCookie.getValue(), "UTF-8");
+					break;
+				}
+			}
 		}
 		
-		// URL Decode the header value since req.getHeaders() doesn't. Unlike req.getParameters().
-		param = java.net.URLDecoder.decode(param, "UTF-8");
-
-		String bar = new Test().doSomething(request, param);
+		
+		String bar;
+		
+		// Simple if statement that assigns constant to bar on true condition
+		int num = 86;
+		if ( (7*42) - num > 200 )
+		   bar = "This_should_always_happen"; 
+		else bar = param;
+		
 		
 		try {
 			java.io.FileInputStream file = new java.io.FileInputStream(org.owasp.benchmark.helpers.Utils.getFileFromClasspath("employees.xml", this.getClass().getClassLoader()));
@@ -62,16 +78,20 @@ public class BenchmarkTest01225 extends HttpServlet {
 			javax.xml.xpath.XPathFactory xpf = javax.xml.xpath.XPathFactory.newInstance();
 			javax.xml.xpath.XPath xp = xpf.newXPath();
 			
+			String expression = "/Employees/Employee[@emplid='"+bar+"']";
+			
 			response.getWriter().println(
 "Your query results are: <br/>"
 );
  
-			String expression = "/Employees/Employee[@emplid='"+bar+"']";
-			response.getWriter().println(
-xp.evaluate(expression, xmlDocument) + "<br/>"
+			org.w3c.dom.NodeList nodeList = (org.w3c.dom.NodeList) xp.compile(expression).evaluate(xmlDocument, javax.xml.xpath.XPathConstants.NODESET);
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				org.w3c.dom.Element value = (org.w3c.dom.Element) nodeList.item(i);
+				response.getWriter().println(
+value.getTextContent() + "<br/>"
 );
 
-			
+			}
 		} catch (javax.xml.xpath.XPathExpressionException e) {
 			// OK to swallow
 			System.out.println("XPath expression exception caught and swallowed: " + e.getMessage());
@@ -80,23 +100,6 @@ xp.evaluate(expression, xmlDocument) + "<br/>"
 		} catch (org.xml.sax.SAXException e) {
 			System.out.println("XPath expression exception caught and swallowed: " + e.getMessage());
 		}
-	}  // end doPost
-
+	}
 	
-    private class Test {
-
-        public String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
-
-		String bar;
-		
-		// Simple ? condition that assigns constant to bar on true condition
-		int num = 106;
-		
-		bar = (7*18) + num > 200 ? "This_should_always_happen" : param;
-		
-
-            return bar;
-        }
-    } // end innerclass Test
-
-} // end DataflowThruInnerClass
+}

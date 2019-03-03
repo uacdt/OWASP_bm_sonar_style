@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.xpathi.noissueexpected;
+package org.owasp.benchmark.testcode.xpathi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,33 +26,34 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/xpathi-00/BenchmarkTest01479")
-public class BenchmarkTest01479 extends HttpServlet {
+@WebServlet(value="/xpathi-00/BenchmarkTest01013")
+public class BenchmarkTest01013 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
+		javax.servlet.http.Cookie userCookie = new javax.servlet.http.Cookie("BenchmarkTest01013", "2222");
+		userCookie.setMaxAge(60*3); //Store cookie for 3 minutes
+		userCookie.setSecure(true);
+		userCookie.setPath(request.getRequestURI());
+		response.addCookie(userCookie);
+		javax.servlet.RequestDispatcher rd = request.getRequestDispatcher("/xpathi-00/BenchmarkTest01013.html");
+		rd.include(request, response);
 	}
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 	
-		String param = "";
-		boolean flag = true;
-		java.util.Enumeration<String> names = request.getParameterNames();
-		while (names.hasMoreElements() && flag) {
-			String name = (String) names.nextElement();		    	
-			String[] values = request.getParameterValues(name);
-			if (values != null) {
-				for(int i=0;i<values.length && flag; i++){
-					String value = values[i];
-					if (value.equals("BenchmarkTest01479")) {
-						param = name;
-					    flag = false;
-					}
+		javax.servlet.http.Cookie[] theCookies = request.getCookies();
+		
+		String param = "noCookieValueSupplied";
+		if (theCookies != null) {
+			for (javax.servlet.http.Cookie theCookie : theCookies) {
+				if (theCookie.getName().equals("BenchmarkTest01013")) {
+					param = java.net.URLDecoder.decode(theCookie.getValue(), "UTF-8");
+					break;
 				}
 			}
 		}
@@ -100,11 +101,11 @@ value.getTextContent() + "<br/>"
 
 		String bar;
 		
-		// Simple if statement that assigns constant to bar on true condition
-		int num = 86;
-		if ( (7*42) - num > 200 )
-		   bar = "This_should_always_happen"; 
-		else bar = param;
+		// Simple ? condition that assigns constant to bar on true condition
+		int num = 106;
+		
+		bar = (7*18) + num > 200 ? "This_should_always_happen" : param;
+		
 
             return bar;
         }
