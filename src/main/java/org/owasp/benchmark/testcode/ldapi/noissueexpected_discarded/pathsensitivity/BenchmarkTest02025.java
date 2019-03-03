@@ -12,11 +12,11 @@
 * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
-* @author Dave Wichers <a href="https://www.aspectsecurity.com">Aspect Security</a>
+* @author Nick Sanidas <a href="https://www.aspectsecurity.com">Aspect Security</a>
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.ldapi.noissueexpected;
+package org.owasp.benchmark.testcode.ldapi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/ldapi-00/BenchmarkTest01492")
-public class BenchmarkTest01492 extends HttpServlet {
+@WebServlet(value="/ldapi-00/BenchmarkTest02025")
+public class BenchmarkTest02025 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -39,12 +39,18 @@ public class BenchmarkTest01492 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
-		org.owasp.benchmark.helpers.SeparateClassRequest scr = new org.owasp.benchmark.helpers.SeparateClassRequest( request );
-		String param = scr.getTheParameter("BenchmarkTest01492");
-		if (param == null) param = "";
 
-		String bar = new Test().doSomething(request, param);
+		String param = "";
+		java.util.Enumeration<String> headers = request.getHeaders("BenchmarkTest02025");
+		
+		if (headers != null && headers.hasMoreElements()) {
+			param = headers.nextElement(); // just grab first element
+		}
+		
+		// URL Decode the header value since req.getHeaders() doesn't. Unlike req.getParameters().
+		param = java.net.URLDecoder.decode(param, "UTF-8");
+
+		String bar = doSomething(request, param);
 		
 	org.owasp.benchmark.helpers.LDAPManager ads = new org.owasp.benchmark.helpers.LDAPManager();
 	try {
@@ -84,11 +90,9 @@ public class BenchmarkTest01492 extends HttpServlet {
 		}
     }
 	}  // end doPost
-
 	
-    private class Test {
-
-        public String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
+		
+	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar;
 		
@@ -97,9 +101,7 @@ public class BenchmarkTest01492 extends HttpServlet {
 		
 		bar = (7*18) + num > 200 ? "This_should_always_happen" : param;
 		
-
-            return bar;
-        }
-    } // end innerclass Test
-
-} // end DataflowThruInnerClass
+	
+		return bar;	
+	}
+}

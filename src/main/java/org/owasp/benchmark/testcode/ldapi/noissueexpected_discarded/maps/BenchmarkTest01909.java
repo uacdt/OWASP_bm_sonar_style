@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.ldapi.noissueexpected;
+package org.owasp.benchmark.testcode.ldapi.noissueexpected_discarded.maps;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/ldapi-00/BenchmarkTest02115")
-public class BenchmarkTest02115 extends HttpServlet {
+@WebServlet(value="/ldapi-00/BenchmarkTest01909")
+public class BenchmarkTest01909 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -40,8 +40,13 @@ public class BenchmarkTest02115 extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 
-		String param = request.getParameter("BenchmarkTest02115");
-		if (param == null) param = "";
+		String param = "";
+		if (request.getHeader("BenchmarkTest01909") != null) {
+			param = request.getHeader("BenchmarkTest01909");
+		}
+		
+		// URL Decode the header value since req.getHeader() doesn't. Unlike req.getParameter().
+		param = java.net.URLDecoder.decode(param, "UTF-8");
 
 		String bar = doSomething(request, param);
 		
@@ -51,13 +56,14 @@ public class BenchmarkTest02115 extends HttpServlet {
 		String base = "ou=users,ou=system";
 		javax.naming.directory.SearchControls sc = new javax.naming.directory.SearchControls();
 		sc.setSearchScope(javax.naming.directory.SearchControls.SUBTREE_SCOPE);
-		String filter = "(&(objectclass=person))(|(uid="+bar+")(street={0}))";
-		Object[] filters = new Object[]{"The streetz 4 Ms bar"};
+		String filter = "(&(objectclass=person)(uid=" + bar
+				+ "))";
 		
 		javax.naming.directory.DirContext ctx = ads.getDirContext();
 		javax.naming.directory.InitialDirContext idc = (javax.naming.directory.InitialDirContext) ctx;
 		javax.naming.NamingEnumeration<javax.naming.directory.SearchResult> results = 
-				idc.search(base, filter,filters, sc);
+				idc.search(base, filter, sc);
+		
 		while (results.hasMore()) {
 			javax.naming.directory.SearchResult sr = (javax.naming.directory.SearchResult) results.next();
 			javax.naming.directory.Attributes attrs = sr.getAttributes();
@@ -90,12 +96,12 @@ public class BenchmarkTest02115 extends HttpServlet {
 	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar = "safe!";
-		java.util.HashMap<String,Object> map89109 = new java.util.HashMap<String,Object>();
-		map89109.put("keyA-89109", "a_Value"); // put some stuff in the collection
-		map89109.put("keyB-89109", param); // put it in a collection
-		map89109.put("keyC", "another_Value"); // put some stuff in the collection
-		bar = (String)map89109.get("keyB-89109"); // get it back out
-		bar = (String)map89109.get("keyA-89109"); // get safe value back out
+		java.util.HashMap<String,Object> map30748 = new java.util.HashMap<String,Object>();
+		map30748.put("keyA-30748", "a_Value"); // put some stuff in the collection
+		map30748.put("keyB-30748", param); // put it in a collection
+		map30748.put("keyC", "another_Value"); // put some stuff in the collection
+		bar = (String)map30748.get("keyB-30748"); // get it back out
+		bar = (String)map30748.get("keyA-30748"); // get safe value back out
 	
 		return bar;	
 	}

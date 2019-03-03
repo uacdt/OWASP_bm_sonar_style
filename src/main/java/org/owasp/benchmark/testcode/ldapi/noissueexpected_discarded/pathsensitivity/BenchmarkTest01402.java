@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.ldapi.noissueexpected;
+package org.owasp.benchmark.testcode.ldapi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 

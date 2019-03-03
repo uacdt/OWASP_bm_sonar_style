@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.ldapi.noissueexpected;
+package org.owasp.benchmark.testcode.ldapi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/ldapi-00/BenchmarkTest01909")
-public class BenchmarkTest01909 extends HttpServlet {
+@WebServlet(value="/ldapi-00/BenchmarkTest02116")
+public class BenchmarkTest02116 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -40,13 +40,8 @@ public class BenchmarkTest01909 extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 
-		String param = "";
-		if (request.getHeader("BenchmarkTest01909") != null) {
-			param = request.getHeader("BenchmarkTest01909");
-		}
-		
-		// URL Decode the header value since req.getHeader() doesn't. Unlike req.getParameter().
-		param = java.net.URLDecoder.decode(param, "UTF-8");
+		String param = request.getParameter("BenchmarkTest02116");
+		if (param == null) param = "";
 
 		String bar = doSomething(request, param);
 		
@@ -95,13 +90,26 @@ public class BenchmarkTest01909 extends HttpServlet {
 		
 	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
-		String bar = "safe!";
-		java.util.HashMap<String,Object> map30748 = new java.util.HashMap<String,Object>();
-		map30748.put("keyA-30748", "a_Value"); // put some stuff in the collection
-		map30748.put("keyB-30748", param); // put it in a collection
-		map30748.put("keyC", "another_Value"); // put some stuff in the collection
-		bar = (String)map30748.get("keyB-30748"); // get it back out
-		bar = (String)map30748.get("keyA-30748"); // get safe value back out
+		String bar;
+		String guess = "ABC";
+		char switchTarget = guess.charAt(1); // condition 'B', which is safe
+		
+		// Simple case statement that assigns param to bar on conditions 'A', 'C', or 'D'
+		switch (switchTarget) {
+		  case 'A':
+		        bar = param;
+		        break;
+		  case 'B': 
+		        bar = "bob";
+		        break;
+		  case 'C':
+		  case 'D':        
+		        bar = param;
+		        break;
+		  default:
+		        bar = "bob's your uncle";
+		        break;
+		}
 	
 		return bar;	
 	}

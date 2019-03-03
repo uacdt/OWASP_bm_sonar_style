@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.ldapi.noissueexpected;
+package org.owasp.benchmark.testcode.ldapi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/ldapi-00/BenchmarkTest00138")
-public class BenchmarkTest00138 extends HttpServlet {
+@WebServlet(value="/ldapi-00/BenchmarkTest00530")
+public class BenchmarkTest00530 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -41,21 +41,43 @@ public class BenchmarkTest00138 extends HttpServlet {
 		response.setContentType("text/html;charset=UTF-8");
 	
 		String param = "";
-		if (request.getHeader("BenchmarkTest00138") != null) {
-			param = request.getHeader("BenchmarkTest00138");
+		boolean flag = true;
+		java.util.Enumeration<String> names = request.getParameterNames();
+		while (names.hasMoreElements() && flag) {
+			String name = (String) names.nextElement();		    	
+			String[] values = request.getParameterValues(name);
+			if (values != null) {
+				for(int i=0;i<values.length && flag; i++){
+					String value = values[i];
+					if (value.equals("BenchmarkTest00530")) {
+						param = name;
+					    flag = false;
+					}
+				}
+			}
 		}
-		
-		// URL Decode the header value since req.getHeader() doesn't. Unlike req.getParameter().
-		param = java.net.URLDecoder.decode(param, "UTF-8");
 		
 		
 		String bar;
+		String guess = "ABC";
+		char switchTarget = guess.charAt(1); // condition 'B', which is safe
 		
-		// Simple ? condition that assigns constant to bar on true condition
-		int num = 106;
-		
-		bar = (7*18) + num > 200 ? "This_should_always_happen" : param;
-		
+		// Simple case statement that assigns param to bar on conditions 'A', 'C', or 'D'
+		switch (switchTarget) {
+		  case 'A':
+		        bar = param;
+		        break;
+		  case 'B': 
+		        bar = "bob";
+		        break;
+		  case 'C':
+		  case 'D':        
+		        bar = param;
+		        break;
+		  default:
+		        bar = "bob's your uncle";
+		        break;
+		}
 		
 		
 	org.owasp.benchmark.helpers.LDAPManager ads = new org.owasp.benchmark.helpers.LDAPManager();
@@ -64,13 +86,14 @@ public class BenchmarkTest00138 extends HttpServlet {
 		String base = "ou=users,ou=system";
 		javax.naming.directory.SearchControls sc = new javax.naming.directory.SearchControls();
 		sc.setSearchScope(javax.naming.directory.SearchControls.SUBTREE_SCOPE);
-		String filter = "(&(objectclass=person))(|(uid="+bar+")(street={0}))";
-		Object[] filters = new Object[]{"The streetz 4 Ms bar"};
+		String filter = "(&(objectclass=person)(uid=" + bar
+				+ "))";
 		
 		javax.naming.directory.DirContext ctx = ads.getDirContext();
 		javax.naming.directory.InitialDirContext idc = (javax.naming.directory.InitialDirContext) ctx;
 		javax.naming.NamingEnumeration<javax.naming.directory.SearchResult> results = 
-				idc.search(base, filter,filters, sc);
+				idc.search(base, filter, sc);
+		
 		while (results.hasMore()) {
 			javax.naming.directory.SearchResult sr = (javax.naming.directory.SearchResult) results.next();
 			javax.naming.directory.Attributes attrs = sr.getAttributes();

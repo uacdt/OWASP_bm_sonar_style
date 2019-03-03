@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.ldapi.noissueexpected;
+package org.owasp.benchmark.testcode.ldapi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/ldapi-00/BenchmarkTest02116")
-public class BenchmarkTest02116 extends HttpServlet {
+@WebServlet(value="/ldapi-00/BenchmarkTest02376")
+public class BenchmarkTest02376 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -40,42 +40,40 @@ public class BenchmarkTest02116 extends HttpServlet {
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 
-		String param = request.getParameter("BenchmarkTest02116");
+		org.owasp.benchmark.helpers.SeparateClassRequest scr = new org.owasp.benchmark.helpers.SeparateClassRequest( request );
+		String param = scr.getTheParameter("BenchmarkTest02376");
 		if (param == null) param = "";
 
 		String bar = doSomething(request, param);
 		
 	org.owasp.benchmark.helpers.LDAPManager ads = new org.owasp.benchmark.helpers.LDAPManager();
 	try {
-		response.setContentType("text/html");
-		String base = "ou=users,ou=system";
-		javax.naming.directory.SearchControls sc = new javax.naming.directory.SearchControls();
-		sc.setSearchScope(javax.naming.directory.SearchControls.SUBTREE_SCOPE);
-		String filter = "(&(objectclass=person)(uid=" + bar
-				+ "))";
-		
-		javax.naming.directory.DirContext ctx = ads.getDirContext();
-		javax.naming.directory.InitialDirContext idc = (javax.naming.directory.InitialDirContext) ctx;
-		javax.naming.NamingEnumeration<javax.naming.directory.SearchResult> results = 
-				idc.search(base, filter, sc);
-		
-		while (results.hasMore()) {
-			javax.naming.directory.SearchResult sr = (javax.naming.directory.SearchResult) results.next();
-			javax.naming.directory.Attributes attrs = sr.getAttributes();
+			response.setContentType("text/html");
+			javax.naming.directory.DirContext ctx = ads.getDirContext();
+			String base = "ou=users,ou=system";
+			javax.naming.directory.SearchControls sc = new javax.naming.directory.SearchControls();
+			sc.setSearchScope(javax.naming.directory.SearchControls.SUBTREE_SCOPE);
+			String filter = "(&(objectclass=person))(|(uid="+bar+")(street={0}))";
+			Object[] filters = new Object[]{"The streetz 4 Ms bar"};
+			// System.out.println("Filter " + filter);
+			javax.naming.NamingEnumeration<javax.naming.directory.SearchResult> results = ctx.search(base, filter,filters, sc);
+			while (results.hasMore()) {
+				javax.naming.directory.SearchResult sr = (javax.naming.directory.SearchResult) results.next();
+				javax.naming.directory.Attributes attrs = sr.getAttributes();
 
-			javax.naming.directory.Attribute attr = attrs.get("uid");
-			javax.naming.directory.Attribute attr2 = attrs.get("street");
-			if (attr != null){
-				response.getWriter().println(
+				javax.naming.directory.Attribute attr = attrs.get("uid");
+				javax.naming.directory.Attribute attr2 = attrs.get("street");
+				if (attr != null){
+					response.getWriter().println(
 "LDAP query results:<br>"
-						+ " Record found with name " + attr.get() + "<br>"
-								+ "Address: " + attr2.get()+ "<br>"
+							+ " Record found with name " + attr.get() + "<br>"
+									+ "Address: " + attr2.get() + "<br>"
 );
-				// System.out.println("record found " + attr.get());
-			} else response.getWriter().println(
+					// System.out.println("record found " + attr.get());
+				} else response.getWriter().println(
 "LDAP query results: nothing found."
 );
-		}
+			}
 	} catch (javax.naming.NamingException e) {
 		throw new ServletException(e);
 	}finally{
@@ -91,25 +89,12 @@ public class BenchmarkTest02116 extends HttpServlet {
 	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar;
-		String guess = "ABC";
-		char switchTarget = guess.charAt(1); // condition 'B', which is safe
 		
-		// Simple case statement that assigns param to bar on conditions 'A', 'C', or 'D'
-		switch (switchTarget) {
-		  case 'A':
-		        bar = param;
-		        break;
-		  case 'B': 
-		        bar = "bob";
-		        break;
-		  case 'C':
-		  case 'D':        
-		        bar = param;
-		        break;
-		  default:
-		        bar = "bob's your uncle";
-		        break;
-		}
+		// Simple ? condition that assigns constant to bar on true condition
+		int num = 106;
+		
+		bar = (7*18) + num > 200 ? "This_should_always_happen" : param;
+		
 	
 		return bar;	
 	}
