@@ -12,11 +12,11 @@
 * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
-* @author Nick Sanidas <a href="https://www.aspectsecurity.com">Aspect Security</a>
+* @author Dave Wichers <a href="https://www.aspectsecurity.com">Aspect Security</a>
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.cmdi.noissueexpected;
+package org.owasp.benchmark.testcode.cmdi.anoissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/cmdi-02/BenchmarkTest01939")
-public class BenchmarkTest01939 extends HttpServlet {
+@WebServlet(value="/cmdi-01/BenchmarkTest01606")
+public class BenchmarkTest01606 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -39,25 +39,25 @@ public class BenchmarkTest01939 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
+	
+		String[] values = request.getParameterValues("BenchmarkTest01606");
+		String param;
+		if (values != null && values.length > 0)
+		  param = values[0];
+		else param = "";
 
-		String param = "";
-		if (request.getHeader("BenchmarkTest01939") != null) {
-			param = request.getHeader("BenchmarkTest01939");
-		}
+		String bar = new Test().doSomething(request, param);
 		
-		// URL Decode the header value since req.getHeader() doesn't. Unlike req.getParameter().
-		param = java.net.URLDecoder.decode(param, "UTF-8");
-
-		String bar = doSomething(request, param);
-		
-		String cmd = org.owasp.benchmark.helpers.Utils.getInsecureOSCommandString(this.getClass().getClassLoader());
-		String[] args = {cmd};
-        String[] argsEnv = { bar };
+		String cmd = "";
+        String osName = System.getProperty("os.name");
+        if (osName.indexOf("Windows") != -1) {
+        	cmd = org.owasp.benchmark.helpers.Utils.getOSCommandString("echo");
+        }
         
 		Runtime r = Runtime.getRuntime();
 
 		try {
-			Process p = r.exec(args, argsEnv, new java.io.File(System.getProperty("user.dir")));
+			Process p = r.exec(cmd + bar);
 			org.owasp.benchmark.helpers.Utils.printOSCommandResults(p, response);
 		} catch (IOException e) {
 			System.out.println("Problem executing cmdi - TestCase");
@@ -67,9 +67,11 @@ public class BenchmarkTest01939 extends HttpServlet {
 			return;
 		}
 	}  // end doPost
+
 	
-		
-	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
+    private class Test {
+
+        public String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar;
 		
@@ -78,7 +80,9 @@ public class BenchmarkTest01939 extends HttpServlet {
 		if ( (7*42) - num > 200 )
 		   bar = "This_should_always_happen"; 
 		else bar = param;
-	
-		return bar;	
-	}
-}
+
+            return bar;
+        }
+    } // end innerclass Test
+
+} // end DataflowThruInnerClass
