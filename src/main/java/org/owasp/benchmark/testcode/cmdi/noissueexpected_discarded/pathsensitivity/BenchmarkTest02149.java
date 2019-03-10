@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.cmdi.noissueexpected;
+package org.owasp.benchmark.testcode.cmdi.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
