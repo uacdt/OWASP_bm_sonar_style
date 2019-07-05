@@ -1,3 +1,7 @@
 target
 .idea
 *.iml
+analyze.sh
+.classpath
+.project
+.settings
