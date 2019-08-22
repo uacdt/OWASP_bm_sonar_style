@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.sqli.noissueexpected;
+package org.owasp.benchmark.testcode.sqli.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/sqli-06/BenchmarkTest02657")
-public class BenchmarkTest02657 extends HttpServlet {
+@WebServlet(value="/sqli-05/BenchmarkTest02626")
+public class BenchmarkTest02626 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -41,15 +41,15 @@ public class BenchmarkTest02657 extends HttpServlet {
 		response.setContentType("text/html;charset=UTF-8");
 
 		String queryString = request.getQueryString();
-		String paramval = "BenchmarkTest02657"+"=";
+		String paramval = "BenchmarkTest02626"+"=";
 		int paramLoc = -1;
 		if (queryString != null) paramLoc = queryString.indexOf(paramval);
 		if (paramLoc == -1) {
-			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest02657" + "' in query string.");
+			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest02626" + "' in query string.");
 			return;
 		}
 		
-		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest02657" param is last parameter in query string.
+		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest02626" param is last parameter in query string.
 		// And then check to see if its in the middle of the query string and if so, trim off what comes after.
 		int ampersandLoc = queryString.indexOf("&", paramLoc);
 		if (ampersandLoc != -1) {
@@ -59,12 +59,14 @@ public class BenchmarkTest02657 extends HttpServlet {
 
 		String bar = doSomething(request, param);
 		
-		String sql = "INSERT INTO users (username, password) VALUES ('foo','"+ bar + "')";
+		String sql = "{call " + bar + "}";
 				
 		try {
-			java.sql.Statement statement = org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();
-			int count = statement.executeUpdate( sql, new int[] {1,2} );
-            org.owasp.benchmark.helpers.DatabaseHelper.outputUpdateComplete(sql, response);
+			java.sql.Connection connection = org.owasp.benchmark.helpers.DatabaseHelper.getSqlConnection();
+			java.sql.CallableStatement statement = connection.prepareCall( sql );
+		    java.sql.ResultSet rs = statement.executeQuery();
+            org.owasp.benchmark.helpers.DatabaseHelper.printResults(rs, sql, response);
+
 		} catch (java.sql.SQLException e) {
 			if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {
         		response.getWriter().println(

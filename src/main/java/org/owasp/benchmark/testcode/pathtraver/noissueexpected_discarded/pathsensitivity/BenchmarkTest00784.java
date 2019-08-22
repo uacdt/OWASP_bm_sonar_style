@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.sqli.noissueexpected;
+package org.owasp.benchmark.testcode.pathtraver.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/sqli-01/BenchmarkTest00851")
-public class BenchmarkTest00851 extends HttpServlet {
+@WebServlet(value="/pathtraver-00/BenchmarkTest00784")
+public class BenchmarkTest00784 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -41,15 +41,15 @@ public class BenchmarkTest00851 extends HttpServlet {
 		response.setContentType("text/html;charset=UTF-8");
 	
 		String queryString = request.getQueryString();
-		String paramval = "BenchmarkTest00851"+"=";
+		String paramval = "BenchmarkTest00784"+"=";
 		int paramLoc = -1;
 		if (queryString != null) paramLoc = queryString.indexOf(paramval);
 		if (paramLoc == -1) {
-			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest00851" + "' in query string.");
+			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest00784" + "' in query string.");
 			return;
 		}
 		
-		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest00851" param is last parameter in query string.
+		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest00784" param is last parameter in query string.
 		// And then check to see if its in the middle of the query string and if so, trim off what comes after.
 		int ampersandLoc = queryString.indexOf("&", paramLoc);
 		if (ampersandLoc != -1) {
@@ -59,28 +59,53 @@ public class BenchmarkTest00851 extends HttpServlet {
 		
 		
 		String bar;
+		String guess = "ABC";
+		char switchTarget = guess.charAt(1); // condition 'B', which is safe
 		
-		// Simple if statement that assigns constant to bar on true condition
-		int num = 86;
-		if ( (7*42) - num > 200 )
-		   bar = "This_should_always_happen"; 
-		else bar = param;
+		// Simple case statement that assigns param to bar on conditions 'A', 'C', or 'D'
+		switch (switchTarget) {
+		  case 'A':
+		        bar = param;
+		        break;
+		  case 'B': 
+		        bar = "bob";
+		        break;
+		  case 'C':
+		  case 'D':        
+		        bar = param;
+		        break;
+		  default:
+		        bar = "bob's your uncle";
+		        break;
+		}
 		
 		
-		String sql = "INSERT INTO users (username, password) VALUES ('foo','"+ bar + "')";
-				
+		String fileName = null;
+		java.io.FileInputStream fis = null;
+
 		try {
-			java.sql.Statement statement = org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();
-			int count = statement.executeUpdate( sql, new String[] {"USERNAME","PASSWORD"} );
-            org.owasp.benchmark.helpers.DatabaseHelper.outputUpdateComplete(sql, response);
-		} catch (java.sql.SQLException e) {
-			if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {
-        		response.getWriter().println(
-"Error processing request."
+			fileName = org.owasp.benchmark.helpers.Utils.testfileDir + bar;
+			fis = new java.io.FileInputStream(fileName);
+			byte[] b = new byte[1000];
+			int size = fis.read(b);
+			response.getWriter().println(
+"The beginning of file: '" + org.owasp.esapi.ESAPI.encoder().encodeForHTML(fileName) + "' is:\n\n"
 );
-        		return;
-        	}
-			else throw new ServletException(e);
+			response.getWriter().println(
+org.owasp.esapi.ESAPI.encoder().encodeForHTML(new String(b,0,size))
+);
+		} catch (Exception e) {
+			System.out.println("Couldn't open FileInputStream on file: '" + fileName + "'");
+//			System.out.println("File exception caught and swallowed: " + e.getMessage());
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+                    fis = null;
+				} catch (Exception e) {
+					// we tried...
+				}
+			}
 		}
 	}
 	

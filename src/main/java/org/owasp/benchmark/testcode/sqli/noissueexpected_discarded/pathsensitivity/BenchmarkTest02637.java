@@ -12,11 +12,11 @@
 * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
-* @author Dave Wichers <a href="https://www.aspectsecurity.com">Aspect Security</a>
+* @author Nick Sanidas <a href="https://www.aspectsecurity.com">Aspect Security</a>
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.pathtraver.noissueexpected;
+package org.owasp.benchmark.testcode.sqli.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/pathtraver-01/BenchmarkTest01644")
-public class BenchmarkTest01644 extends HttpServlet {
+@WebServlet(value="/sqli-05/BenchmarkTest02637")
+public class BenchmarkTest02637 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -39,17 +39,17 @@ public class BenchmarkTest01644 extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-	
+
 		String queryString = request.getQueryString();
-		String paramval = "BenchmarkTest01644"+"=";
+		String paramval = "BenchmarkTest02637"+"=";
 		int paramLoc = -1;
 		if (queryString != null) paramLoc = queryString.indexOf(paramval);
 		if (paramLoc == -1) {
-			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest01644" + "' in query string.");
+			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest02637" + "' in query string.");
 			return;
 		}
 		
-		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest01644" param is last parameter in query string.
+		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest02637" param is last parameter in query string.
 		// And then check to see if its in the middle of the query string and if so, trim off what comes after.
 		int ampersandLoc = queryString.indexOf("&", paramLoc);
 		if (ampersandLoc != -1) {
@@ -57,42 +57,29 @@ public class BenchmarkTest01644 extends HttpServlet {
 		}
 		param = java.net.URLDecoder.decode(param, "UTF-8");
 
-		String bar = new Test().doSomething(request, param);
+		String bar = doSomething(request, param);
 		
-        String fileName = null;
-        java.io.FileInputStream fis = null;
-
-        try {
-          fileName = org.owasp.benchmark.helpers.Utils.testfileDir + bar;
-          fis = new java.io.FileInputStream(new java.io.File(fileName));
-          byte[] b = new byte[1000];
-          int size = fis.read(b);
-          response.getWriter().println(
-            "The beginning of file: '" + org.owasp.esapi.ESAPI.encoder().encodeForHTML(fileName)
-              + "' is:\n\n" + org.owasp.esapi.ESAPI.encoder().encodeForHTML(new String(b,0,size))
-          );
-        } catch (Exception e) {
-            System.out.println("Couldn't open FileInputStream on file: '" + fileName + "'");
-            response.getWriter().println(
-              "Problem getting FileInputStream: "
-                 + org.owasp.esapi.ESAPI.encoder().encodeForHTML(e.getMessage())
-            );
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                    fis = null;
-                } catch (Exception e) {
-                    // we tried...
-                }
-            }
-        }
+		String sql = "SELECT * from USERS where USERNAME=? and PASSWORD='"+ bar +"'";
+				
+		try {
+			java.sql.Connection connection = org.owasp.benchmark.helpers.DatabaseHelper.getSqlConnection();
+			java.sql.PreparedStatement statement = connection.prepareStatement( sql, new String[] {"Column1","Column2"} );
+			statement.setString(1, "foo");
+			statement.execute();
+            org.owasp.benchmark.helpers.DatabaseHelper.printResults(statement, sql, response);
+		} catch (java.sql.SQLException e) {
+			if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {
+        		response.getWriter().println(
+"Error processing request."
+);
+        		return;
+        	}
+			else throw new ServletException(e);
+		}
 	}  // end doPost
-
 	
-    private class Test {
-
-        public String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
+		
+	private static String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
 
 		String bar;
 		
@@ -101,9 +88,7 @@ public class BenchmarkTest01644 extends HttpServlet {
 		
 		bar = (7*18) + num > 200 ? "This_should_always_happen" : param;
 		
-
-            return bar;
-        }
-    } // end innerclass Test
-
-} // end DataflowThruInnerClass
+	
+		return bar;	
+	}
+}

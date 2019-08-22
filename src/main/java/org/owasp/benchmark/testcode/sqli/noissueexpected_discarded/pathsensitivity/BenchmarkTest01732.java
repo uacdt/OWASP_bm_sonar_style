@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.sqli.noissueexpected;
+package org.owasp.benchmark.testcode.sqli.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/sqli-03/BenchmarkTest01714")
-public class BenchmarkTest01714 extends HttpServlet {
+@WebServlet(value="/sqli-03/BenchmarkTest01732")
+public class BenchmarkTest01732 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -41,15 +41,15 @@ public class BenchmarkTest01714 extends HttpServlet {
 		response.setContentType("text/html;charset=UTF-8");
 	
 		String queryString = request.getQueryString();
-		String paramval = "BenchmarkTest01714"+"=";
+		String paramval = "BenchmarkTest01732"+"=";
 		int paramLoc = -1;
 		if (queryString != null) paramLoc = queryString.indexOf(paramval);
 		if (paramLoc == -1) {
-			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest01714" + "' in query string.");
+			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest01732" + "' in query string.");
 			return;
 		}
 		
-		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest01714" param is last parameter in query string.
+		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest01732" param is last parameter in query string.
 		// And then check to see if its in the middle of the query string and if so, trim off what comes after.
 		int ampersandLoc = queryString.indexOf("&", paramLoc);
 		if (ampersandLoc != -1) {
@@ -59,13 +59,11 @@ public class BenchmarkTest01714 extends HttpServlet {
 
 		String bar = new Test().doSomething(request, param);
 		
-		String sql = "{call " + bar + "}";
-						
+		String sql = "SELECT * from USERS where USERNAME='foo' and PASSWORD='"+ bar +"'";
+				
 		try {
-			java.sql.Connection connection = org.owasp.benchmark.helpers.DatabaseHelper.getSqlConnection();
-			java.sql.CallableStatement statement = connection.prepareCall( sql, java.sql.ResultSet.TYPE_FORWARD_ONLY, 
-							java.sql.ResultSet.CONCUR_READ_ONLY );
-			java.sql.ResultSet rs = statement.executeQuery();
+			java.sql.Statement statement = org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();
+			java.sql.ResultSet rs = statement.executeQuery( sql );
             org.owasp.benchmark.helpers.DatabaseHelper.printResults(rs, sql, response);
 		} catch (java.sql.SQLException e) {
 			if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {

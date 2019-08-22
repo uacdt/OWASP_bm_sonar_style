@@ -12,11 +12,11 @@
 * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
 *
-* @author Dave Wichers <a href="https://www.aspectsecurity.com">Aspect Security</a>
+* @author Nick Sanidas <a href="https://www.aspectsecurity.com">Aspect Security</a>
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.cmdi.noissueexpected;
+package org.owasp.benchmark.testcode.sqli.noissueexpected_discarded.pathsensitivity;
 
 import java.io.IOException;
 
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/cmdi-01/BenchmarkTest01687")
-public class BenchmarkTest01687 extends HttpServlet {
+@WebServlet(value="/sqli-01/BenchmarkTest00851")
+public class BenchmarkTest00851 extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -41,63 +41,23 @@ public class BenchmarkTest01687 extends HttpServlet {
 		response.setContentType("text/html;charset=UTF-8");
 	
 		String queryString = request.getQueryString();
-		String paramval = "BenchmarkTest01687"+"=";
+		String paramval = "BenchmarkTest00851"+"=";
 		int paramLoc = -1;
 		if (queryString != null) paramLoc = queryString.indexOf(paramval);
 		if (paramLoc == -1) {
-			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest01687" + "' in query string.");
+			response.getWriter().println("getQueryString() couldn't find expected parameter '" + "BenchmarkTest00851" + "' in query string.");
 			return;
 		}
 		
-		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest01687" param is last parameter in query string.
+		String param = queryString.substring(paramLoc + paramval.length()); // 1st assume "BenchmarkTest00851" param is last parameter in query string.
 		// And then check to see if its in the middle of the query string and if so, trim off what comes after.
 		int ampersandLoc = queryString.indexOf("&", paramLoc);
 		if (ampersandLoc != -1) {
 			param = queryString.substring(paramLoc + paramval.length(), ampersandLoc);
 		}
 		param = java.net.URLDecoder.decode(param, "UTF-8");
-
-		String bar = new Test().doSomething(request, param);
 		
-		String cmd = "";	
-		String a1 = "";
-		String a2 = "";
-		String[] args = null;
-		String osName = System.getProperty("os.name");
 		
-		if (osName.indexOf("Windows") != -1) {
-        	a1 = "cmd.exe";
-        	a2 = "/c";
-        	cmd = "echo ";
-        	args = new String[]{a1, a2, cmd, bar};
-        } else {
-        	a1 = "sh";
-        	a2 = "-c";
-        	cmd = org.owasp.benchmark.helpers.Utils.getOSCommandString("ls");
-        	args = new String[]{a1, a2, cmd, bar};
-        }
-        
-        String[] argsEnv = { "foo=bar" };
-        
-		Runtime r = Runtime.getRuntime();
-
-		try {
-			Process p = r.exec(args, argsEnv, new java.io.File(System.getProperty("user.dir")));
-			org.owasp.benchmark.helpers.Utils.printOSCommandResults(p, response);
-		} catch (IOException e) {
-			System.out.println("Problem executing cmdi - TestCase");
-			response.getWriter().println(
-			  org.owasp.esapi.ESAPI.encoder().encodeForHTML(e.getMessage())
-			);
-			return;
-		}
-	}  // end doPost
-
-	
-    private class Test {
-
-        public String doSomething(HttpServletRequest request, String param) throws ServletException, IOException {
-
 		String bar;
 		
 		// Simple if statement that assigns constant to bar on true condition
@@ -105,9 +65,23 @@ public class BenchmarkTest01687 extends HttpServlet {
 		if ( (7*42) - num > 200 )
 		   bar = "This_should_always_happen"; 
 		else bar = param;
-
-            return bar;
-        }
-    } // end innerclass Test
-
-} // end DataflowThruInnerClass
+		
+		
+		String sql = "INSERT INTO users (username, password) VALUES ('foo','"+ bar + "')";
+				
+		try {
+			java.sql.Statement statement = org.owasp.benchmark.helpers.DatabaseHelper.getSqlStatement();
+			int count = statement.executeUpdate( sql, new String[] {"USERNAME","PASSWORD"} );
+            org.owasp.benchmark.helpers.DatabaseHelper.outputUpdateComplete(sql, response);
+		} catch (java.sql.SQLException e) {
+			if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {
+        		response.getWriter().println(
+"Error processing request."
+);
+        		return;
+        	}
+			else throw new ServletException(e);
+		}
+	}
+	
+}
