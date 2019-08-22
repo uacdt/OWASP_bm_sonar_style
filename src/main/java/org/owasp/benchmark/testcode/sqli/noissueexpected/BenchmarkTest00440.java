@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.sqli.noissueexpected_discarded.maps;
+package org.owasp.benchmark.testcode.sqli.noissueexpected;
 
 import java.io.IOException;
 

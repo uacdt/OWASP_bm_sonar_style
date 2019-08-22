@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.pathtraver.noissueexpected_discarded.maps;
+package org.owasp.benchmark.testcode.pathtraver.noissueexpected;
 
 import java.io.IOException;
 

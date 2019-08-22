@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.ldapi.noissueexpected_discarded.maps;
+package org.owasp.benchmark.testcode.ldapi.noissueexpected;
 
 import java.io.IOException;
 

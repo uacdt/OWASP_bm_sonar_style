@@ -16,7 +16,7 @@
 * @created 2015
 */
 
-package org.owasp.benchmark.testcode.xpathi.noissueexpected_discarded.maps;
+package org.owasp.benchmark.testcode.xpathi.noissueexpected;
 
 import java.io.IOException;
 

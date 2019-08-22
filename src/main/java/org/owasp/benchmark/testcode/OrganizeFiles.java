@@ -28,10 +28,10 @@ public class OrganizeFiles {
           System.out.println(fileName);
           if (issueExpected) {
             Files.move(new File("src/main/java/org/owasp/benchmark/testcode/", fileName + ".java").toPath(),
-              new File("src/main/java/org/owasp/benchmark/testcode/" + category + "/compliant/", fileName + ".java").toPath(), REPLACE_EXISTING);
+              new File("src/main/java/org/owasp/benchmark/testcode/" + category + "/issueexpected/", fileName + ".java").toPath(), REPLACE_EXISTING);
           } else {
             Files.move(new File("src/main/java/org/owasp/benchmark/testcode/", fileName + ".java").toPath(),
-              new File("src/main/java/org/owasp/benchmark/testcode/" + category + "/noncompliant/", fileName + ".java").toPath(), REPLACE_EXISTING);
+              new File("src/main/java/org/owasp/benchmark/testcode/" + category + "/noissueexpected/", fileName + ".java").toPath(), REPLACE_EXISTING);
           }
         } catch (IOException e) {
           System.out.println(e.getMessage());
